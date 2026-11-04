@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura Dravida — Tactile Language Studio & Arcade</title>
+  
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700&family=Noto+Sans+Telugu:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       ELYTRA LADYBUG × MAGIC KEYBOARD DESIGN TOKENS
+       ========================================================================== */
+    :root {
+      --bg-base: #070709;
+      --bg-surface: #0e0e13;
+      --bg-elevated: #15151c;
+      --bg-key: #1c1c24;
+      --bg-key-hover: #262632;
+      --bg-key-active: #313140;
+
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(244, 63, 94, 0.5);
+
+      /* Elytra Ladybug Iridescent Accents */
+      --elytra-red: #f43f5e;
+      --elytra-crimson: #e11d48;
+      --elytra-glow: rgba(244, 63, 94, 0.28);
+      --accent-amber: #f59e0b;
+      --accent-amber-glow: rgba(245, 158, 11, 0.22);
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+
+      --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono: 'Geist Mono', monospace;
+      --font-kn: 'Noto Sans Kannada', var(--font-sans);
+      --font-te: 'Noto Sans Telugu', var(--font-sans);
+      --font-ta: 'Noto Sans Tamil', var(--font-sans);
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 22px;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      overflow-x: hidden;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(ellipse 70% 45% at 50% -10%, rgba(244, 63, 94, 0.12), transparent 70%),
+        radial-gradient(circle at 100% 40%, rgba(245, 158, 11, 0.06), transparent 50%),
+        radial-gradient(circle at 0% 80%, rgba(6, 182, 212, 0.04), transparent 50%);
+    }
+
+    /* Ambient Subtle Elytra Dot Matrix */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header Nav & Elytra Pill Capsule */
+    header {
+      position: sticky;
+      top: 16px;
+      z-index: 50;
+      display: flex;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 8px 16px;
+      background: rgba(14, 14, 19, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-ladybug {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 800;
+      box-shadow: 0 0 14px var(--elytra-glow);
+    }
+
+    /* Domain Segmented Toggle (Kannada | Telugu | Tamil) */
+    .domain-switcher {
+      display: flex;
+      background: var(--bg-elevated);
+      padding: 3px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      gap: 2px;
+    }
+
+    .domain-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .domain-btn span.script-char {
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .domain-btn.active {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.2) 0%, rgba(245, 158, 11, 0.15) 100%);
+      color: #fff;
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      box-shadow: 0 0 12px var(--elytra-glow);
+    }
+
+    /* HUD Stats Strip */
+    .hud-stats {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stat-chip {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-chip b {
+      color: var(--accent-amber);
+      font-weight: 700;
+    }
+
+    .sound-toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sound-toggle-btn.active {
+      border-color: var(--elytra-red);
+      color: var(--elytra-red);
+      box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+    }
+
+    .sound-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 60px 0 35px;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 14px;
+      background: rgba(244, 63, 94, 0.08);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      border-radius: var(--radius-pill);
+      color: var(--elytra-red);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.15);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5.2vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.08;
+      max-width: 860px;
+      margin: 0 auto 16px;
+    }
+
+    .hero h1 span.gradient-text {
+      background: linear-gradient(135deg, #ffffff 20%, #f43f5e 80%, #fb923c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.08rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto 30px;
+      font-weight: 400;
+    }
+
+    /* Navigation Mode Tabs (Translator vs Arcade Games) */
+    .module-nav-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .module-tab-btn {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .module-tab-btn:hover {
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .module-tab-btn.active {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border-color: var(--elytra-red);
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.2);
+    }
+
+    /* Content Card Wrapper (Elytra Blade Chassis) */
+    .deck-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: 0 25px 65px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      margin-bottom: 60px;
+      position: relative;
+    }
+
+    .deck-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--elytra-red), transparent);
+    }
+
+    .deck-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .deck-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .sentence-input {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 1.25rem;
+      padding: 18px 60px 18px 20px;
+      border-radius: var(--radius-md);
+      outline: none;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .sentence-input:focus {
+      border-color: var(--elytra-red);
+      box-shadow: 0 0 0 4px var(--elytra-glow);
+    }
+
+    .submit-key {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-key);
+      border: 1px solid var(--border-subtle);
+      color: var(--elytra-red);
+      width: 40px;
+      height: 40px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #0d0d12, inset 0 1px 0 rgba(255,255,255,0.1);
+      transition: all 0.1s ease;
+    }
+
+    .submit-key:active {
+      transform: translateY(calc(-50% + 2px));
+      box-shadow: 0 1px 0 #0d0d12;
+    }
+
+    /* Quick Preset Chips */
+    .quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .chip {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      padding: 6px 14px;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .chip:hover {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border-color: rgba(255,255,255,0.22);
+    }
+
+    /* Translation Dual Output Grid */
+    .output-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .output-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .output-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 146px;
+      transition: border-color 0.2s ease;
+    }
+
+    .output-card:hover {
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .card-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--elytra-red);
+    }
+
+    .card-action-btn {
+      background: var(--bg-key);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .card-action-btn:hover {
+      color: var(--text-primary);
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    .native-script-text {
+      font-size: 1.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .translit-text {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: #38bdf8;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    /* Lexical Decomposition Bar */
+    .breakdown-box {
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .breakdown-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 4px;
+    }
+
+    .word-unit {
+      background: var(--bg-key);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 6px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .word-unit:hover {
+      border-color: var(--elytra-red);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.15);
+    }
+
+    .wu-native {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .wu-translit {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #38bdf8;
+    }
+
+    /* ==========================================================================
+       GAMES & ACTIVITIES SECTION
+       ========================================================================== */
+    .hidden-panel {
+      display: none !important;
+    }
+
+    /* Game 1: Word Blitz */
+    .game-arena {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .game-stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-elevated);
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .game-timer-track {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-key);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .game-timer-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--elytra-red), var(--accent-amber));
+      transition: width 0.1s linear;
+    }
+
+    .blitz-prompt-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 30px;
+      text-align: center;
+    }
+
+    .blitz-instruction {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .blitz-query {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .blitz-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .blitz-options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .blitz-option-btn {
+      background: var(--bg-key);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 0 #0d0d12;
+    }
+
+    .blitz-option-btn:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      background: var(--bg-key-hover);
+      transform: translateY(-2px);
+    }
+
+    .blitz-option-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #0d0d12;
+    }
+
+    .blitz-option-btn.correct {
+      border-color: var(--accent-emerald) !important;
+      background: rgba(16, 185, 129, 0.15) !important;
+    }
+
+    .blitz-option-btn.wrong {
+      border-color: var(--elytra-crimson) !important;
+      background: rgba(225, 29, 72, 0.15) !important;
+    }
+
+    .opt-translit {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #38bdf8;
+    }
+
+    .opt-native {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    /* Game 2: Syntax Scramble */
+    .scramble-box {
+      background: var(--bg-elevated);
+      border: 1px dashed var(--border-subtle);
+      border-radius: var(--radius-md);
+      min-height: 80px;
+      padding: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .scramble-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .scramble-chip {
+      background: linear-gradient(180deg, #242430 0%, #1a1a22 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 4px 0 #0f0f14;
+      transition: all 0.1s ease;
+    }
+
+    .scramble-chip:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #0f0f14;
+    }
+
+    /* Game 3: Sound Guesser */
+    .audio-play-big-btn {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.15), rgba(245, 158, 11, 0.15));
+      border: 1px solid var(--elytra-red);
+      color: #fff;
+      padding: 24px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 0 auto 24px;
+      max-width: 320px;
+      box-shadow: 0 0 25px var(--elytra-glow);
+      transition: all 0.2s ease;
+    }
+
+    .audio-play-big-btn:hover {
+      transform: scale(1.02);
+    }
+
+    /* ==========================================================================
+       TACTILE MECHANICAL KEYPAD (Akshara Matrix)
+       ========================================================================== */
+    .keypad-wrapper {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 70px;
+    }
+
+    .keys-category {
+      margin-bottom: 24px;
+    }
+
+    .keys-cat-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+      gap: 10px;
+    }
+
+    .mech-key {
+      background: linear-gradient(180deg, #23232b 0%, #17171d 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 12px 6px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 4px 0 #0d0d11, 0 6px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12);
+      transition: all 0.08s ease;
+    }
+
+    .mech-key:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      background: linear-gradient(180deg, #2a2a34 0%, #1c1c23 100%);
+    }
+
+    .mech-key:active, .mech-key.pressed {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #0d0d11, 0 2px 4px rgba(0,0,0,0.4);
+      border-color: var(--elytra-red);
+    }
+
+    .mech-native {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .mech-translit {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .key-inspector {
+      margin-top: 16px;
+      background: var(--bg-elevated);
+      border: 1px dashed var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 54px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .ki-text {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .ki-highlight {
+      color: var(--elytra-red);
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       FIELD SCENARIOS
+       ========================================================================== */
+    .scenarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 16px;
+      margin-bottom: 80px;
+    }
+
+    .scenario-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .scenario-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .sc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .sc-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      padding: 3px 8px;
+    }
+
+    .sc-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .sc-phrase-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--bg-elevated);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .sc-en {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .sc-translit {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent-amber);
+    }
+
+    .sc-native {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 40px 0 60px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+    }
+
+    /* Active Font Styles for dynamic language classes */
+    .lang-kn { font-family: var(--font-kn); }
+    .lang-te { font-family: var(--font-te); }
+    .lang-ta { font-family: var(--font-ta); }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <!-- Ambient Top Nav Bar -->
+  <header>
+    <nav class="nav-bar">
+      <a href="#" class="brand">
+        <span class="brand-ladybug" id="brandIcon">ಕ</span>
+        <span>Aura Dravida</span>
+      </a>
+
+      <!-- Multi-domain switch (Kannada, Telugu, Tamil) -->
+      <div class="domain-switcher">
+        <button class="domain-btn active" data-lang="kn">
+          <span class="script-char">ಕ</span> KANNADA
+        </button>
+        <button class="domain-btn" data-lang="te">
+          <span class="script-char">తె</span> TELUGU
+        </button>
+        <button class="domain-btn" data-lang="ta">
+          <span class="script-char">த</span> TAMIL
+        </button>
+      </div>
+
+      <!-- Live Gamified HUD Stats -->
+      <div class="hud-stats">
+        <div class="stat-chip">
+          <span>XP</span> <b id="xpVal">120</b>
+        </div>
+        <div class="stat-chip">
+          <span>STREAK</span> <b id="streakVal">3🔥</b>
+        </div>
+        <button id="soundToggle" class="sound-toggle-btn active" title="Toggle Mechanical Clack Sounds">
+          <span class="sound-dot"></span>
+          <span>AUDIO ON</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="pill-badge" id="langHeroBadge">
+        <span>●</span> DOMAIN ACTIVE // KANNADA (KN-01)
+      </div>
+      <h1>Decode Dravidian Tongues, <span class="gradient-text">key by key.</span></h1>
+      <p>Type any English sentence to get instant native script & English phonetics (Kanglish, Tenglish, Tanglish). Engage in tactile arcade games engineered for speed fluency.</p>
+    </section>
+
+    <!-- Navigation Mode Tabs -->
+    <div class="module-nav-tabs">
+      <button class="module-tab-btn active" data-tab="synth">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-6-6-6M12 19h8"/></svg>
+        <span>TRANSLATION SYNTH</span>
+      </button>
+      <button class="module-tab-btn" data-tab="game-blitz">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span>WORD BLITZ (GAME)</span>
+      </button>
+      <button class="module-tab-btn" data-tab="game-scramble">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>SYNTAX SCRAMBLE</span>
+      </button>
+      <button class="module-tab-btn" data-tab="game-audio">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        <span>SOUND GUESSER</span>
+      </button>
+      <button class="module-tab-btn" data-tab="matrix">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6" y2="8"/><line x1="10" y1="8" x2="10" y2="8"/><line x1="14" y1="8" x2="14" y2="8"/><line x1="18" y1="8" x2="18" y2="8"/></svg>
+        <span>AKSHARA KEYBOARD</span>
+      </button>
+    </div>
+
+    <!-- MODULE 1: INTERACTIVE TRANSLATION SYNTHESIZER -->
+    <section id="moduleSynth" class="deck-container">
+      <div class="deck-header">
+        <div class="deck-tag" id="synthDeckTag">// SENTENCE SYNTHESIS UNIT — KANNADA</div>
+        <div class="deck-tag" id="statusIndicator">READY // 100% LATENCY-FREE</div>
+      </div>
+
+      <!-- Input Field -->
+      <div class="input-wrapper">
+        <input 
+          type="text" 
+          id="sentenceInput" 
+          class="sentence-input" 
+          placeholder="Ask anything in English... (e.g. 'Where is the metro station?')"
+          autocomplete="off"
+          spellcheck="false"
+          value="Where is the metro station?"
+        >
+        <button id="translateBtn" class="submit-key" title="Translate (Enter)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+
+      <!-- Quick Preset Chips -->
+      <div class="quick-chips" id="quickChipsContainer">
+        <!-- Rendered based on language -->
+      </div>
+
+      <!-- Dual Output Display -->
+      <div class="output-grid">
+        <!-- Native Script Display -->
+        <div class="output-card">
+          <div class="card-meta">
+            <span class="card-label" id="nativeScriptLabel">Kannada Script [ಲಿಪಿ]</span>
+            <button class="card-action-btn" id="speakNativeBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+              <span>Pronounce</span>
+            </button>
+          </div>
+          <div class="native-script-text lang-kn" id="nativeOutput">ಮೆಟ್ರೋ ನಿಲ್ದಾಣ ಎಲ್ಲಿದೆ?</div>
+        </div>
+
+        <!-- English Transliteration Display -->
+        <div class="output-card">
+          <div class="card-meta">
+            <span class="card-label" id="translitLabel">Kannada in English (Kanglish)</span>
+            <button class="card-action-btn" id="copyTranslitBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span id="copyFeedback">Copy</span>
+            </button>
+          </div>
+          <div class="translit-text" id="translitOutput">Metro nildhana ellidhe?</div>
+        </div>
+      </div>
+
+      <!-- Lexical Breakdown -->
+      <div class="breakdown-box" id="breakdownContainer">
+        <span class="breakdown-label">Lexical Deconstruction:</span>
+      </div>
+    </section>
+
+    <!-- MODULE 2: GAME — WORD BLITZ (SPEED MATCH) -->
+    <section id="moduleBlitz" class="deck-container hidden-panel">
+      <div class="deck-header">
+        <div class="deck-tag">// SPEED DRILL: WORD BLITZ</div>
+        <div class="deck-tag">SCORE: <span id="blitzScore" style="color:var(--accent-amber)">0</span> | MULTIPLIER: <span id="blitzMultiplier" style="color:var(--elytra-red)">1x</span></div>
+      </div>
+
+      <div class="game-arena">
+        <div class="game-timer-track">
+          <div class="game-timer-fill" id="timerFill"></div>
+        </div>
+
+        <div class="blitz-prompt-card">
+          <div class="blitz-instruction">IDENTIFY THE EXACT PHONETIC TRANSLATION IN ENGLISH WORDS</div>
+          <div class="blitz-query" id="blitzQuestion">"Where is the metro station?"</div>
+        </div>
+
+        <div class="blitz-options-grid" id="blitzOptions">
+          <!-- Dynamic 4 Options -->
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 3: GAME — SYNTAX SCRAMBLE -->
+    <section id="moduleScramble" class="deck-container hidden-panel">
+      <div class="deck-header">
+        <div class="deck-tag">// SYNTAX SCRAMBLE: RECONSTRUCT THE SENTENCE</div>
+        <div class="deck-tag">ARRANGE IN GRAMMATICAL ORDER</div>
+      </div>
+
+      <div class="blitz-prompt-card" style="margin-bottom:16px;">
+        <div class="blitz-instruction">TARGET SENTENCE IN ENGLISH:</div>
+        <div class="blitz-query" id="scramblePrompt">"One filter coffee, less sugar please."</div>
+      </div>
+
+      <div class="scramble-box" id="scrambleDropzone">
+        <span class="breakdown-label">Click words below to assemble here:</span>
+      </div>
+
+      <div class="scramble-pool" id="scrambleWordPool">
+        <!-- Scrambled word chips dynamically inserted -->
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <button class="card-action-btn" id="scrambleResetBtn">Reset Chips</button>
+        <button class="submit-key" style="position:static; transform:none; width:auto; padding:0 20px;" id="scrambleCheckBtn">VERIFY SYNTAX</button>
+      </div>
+    </section>
+
+    <!-- MODULE 4: GAME — AKSHARA SOUND GUESSER -->
+    <section id="moduleAudio" class="deck-container hidden-panel">
+      <div class="deck-header">
+        <div class="deck-tag">// ACOUSTIC DECRYPTOR: GUESS THE SWITCH</div>
+        <div class="deck-tag">AUDIO-PHONETIC CHALLENGE</div>
+      </div>
+
+      <div style="text-align:center; padding: 20px 0;">
+        <button class="audio-play-big-btn" id="playMysterySoundBtn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          <span>REPLAY MYSTERY AKSHARA</span>
+        </button>
+        <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom: 24px;">Listen to the phonetic syllable and tap the matching mechanical keycap below:</p>
+      </div>
+
+      <div class="key-grid" id="audioGuessOptions" style="max-width:600px; margin:0 auto 20px;">
+        <!-- Dynamic keys for guess -->
+      </div>
+
+      <div id="audioFeedback" style="text-align:center; font-family:var(--font-mono); font-size:1rem; min-height:24px;"></div>
+    </section>
+
+    <!-- MODULE 5: MECHANICAL KEYPAD MATRIX -->
+    <section id="moduleMatrix" class="deck-container hidden-panel">
+      <div class="deck-header">
+        <div class="deck-tag">// TACTILE AKSHARA SWITCH MATRIX</div>
+        <div class="deck-tag">HARDWARE ACOUSTIC EMULATOR</div>
+      </div>
+
+      <div class="keys-category">
+        <div class="keys-cat-label">[01 // VOWELS]</div>
+        <div class="key-grid" id="vowelsGrid"></div>
+      </div>
+
+      <div class="keys-category">
+        <div class="keys-cat-label">[02 // CONSONANTS]</div>
+        <div class="key-grid" id="consonantsGrid"></div>
+      </div>
+
+      <div class="key-inspector" id="keyInspector">
+        <span class="ki-text">Active Switch: <span class="ki-highlight" id="inspChar">ಕ</span> (<span id="inspPhonetic">ka</span>)</span>
+        <span class="ki-text">Lexical Anchor: <span class="ki-highlight" id="inspSample">Kannada (ಕನ್ನಡ)</span></span>
+      </div>
+    </section>
+
+    <!-- SITUATIONAL FIELD DRILLS -->
+    <section id="scenariosSection">
+      <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 1.6rem; font-weight:700; letter-spacing:-0.02em;">Field Scenarios</h2>
+        <p style="color:var(--text-secondary); font-size:0.95rem;">Tap any real-world situation to inject into the synthesis console.</p>
+      </div>
+
+      <div class="scenarios-grid" id="scenariosGridContainer">
+        <!-- Rendered based on language domain -->
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>© Aura Dravida Studio. Inspired by Aura Elytra Ladybug & Magic Keyboard hardware. Engineered for Dravidian fluency.</p>
+    </footer>
+  </main>
+
+  <!-- ==========================================================================
+       MULTI-LANGUAGE DATA & LOGIC ENGINE
+       ========================================================================== -->
+  <script>
+    /* ==========================================================================
+       1. SYNTHESIZED MECHANICAL AUDIO ENGINE (Web Audio API)
+       ========================================================================== */
+    class MechanicalAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+      }
+
+      playSwitchClick(freq = 420, isBass = false) {
+        if (!this.enabled) return;
+        this.init();
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        // Mechanical snap noise
+        const bufferSize = this.ctx.sampleRate * 0.015;
+        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+
+        const whiteNoise = this.ctx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+
+        const noiseFilter = this.ctx.createBiquadFilter();
+        noiseFilter.type = 'bandpass';
+        noiseFilter.frequency.setValueAtTime(isBass ? 320 : 880, now);
+
+        const noiseGain = this.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.08, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
+
+        whiteNoise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(this.ctx.destination);
+
+        // Core tactile tone
+        osc.type = isBass ? 'triangle' : 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        osc.frequency.exponentialRampToValueAtTime(50, now + 0.04);
+
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        whiteNoise.start(now);
+        osc.stop(now + 0.045);
+        whiteNoise.stop(now + 0.015);
+      }
+
+      playBuzzer(isWin = true) {
+        if (!this.enabled) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = isWin ? 'triangle' : 'sawtooth';
+        osc.frequency.setValueAtTime(isWin ? 587.33 : 130.81, now);
+        if (isWin) {
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+        } else {
+          osc.frequency.exponentialRampToValueAtTime(65, now + 0.2);
+        }
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+    }
+
+    const sound = new MechanicalAudioEngine();
+
+    /* ==========================================================================
+       2. MULTI-LANGUAGE DICTIONARY & DATABASE (Kannada, Telugu, Tamil)
+       ========================================================================== */
+    const languageConfig = {
+      kn: {
+        code: 'kn',
+        speechCode: 'kn-IN',
+        name: 'Kannada',
+        translitName: 'Kanglish',
+        icon: 'ಕ',
+        fontClass: 'lang-kn',
+        heroTag: 'DOMAIN ACTIVE // KANNADA (KN-01)',
+        curated: {
+          "where is the metro station?": {
+            native: "ಮೆಟ್ರೋ ನಿಲ್ದಾಣ ಎಲ್ಲಿದೆ?",
+            translit: "Metro nildhaana ellidhe?",
+            breakdown: [
+              { native: "ಮೆಟ್ರೋ", translit: "Metro" },
+              { native: "ನಿಲ್ದಾಣ", translit: "Nildhaana (Station)" },
+              { native: "ಎಲ್ಲಿದೆ?", translit: "Ellidhe? (Where is it)" }
+            ]
+          },
+          "how much for this auto ride?": {
+            native: "ಈ ಆಟೋ ಸವಾರಿಗೆ ಎಷ್ಟು?",
+            translit: "Ee auto savaarige eshtu?",
+            breakdown: [
+              { native: "ಈ", translit: "Ee (This)" },
+              { native: "ಆಟೋ", translit: "Auto" },
+              { native: "ಸವಾರಿಗೆ", translit: "Savaarige (For ride)" },
+              { native: "ಎಷ್ಟು?", translit: "Eshtu? (How much)" }
+            ]
+          },
+          "did you have coffee?": {
+            native: "ಕಾಫಿ ಕುಡಿದಿರಾ?",
+            translit: "Coffee kudidheera?",
+            breakdown: [
+              { native: "ಕಾಫಿ", translit: "Coffee" },
+              { native: "ಕುಡಿದಿರಾ?", translit: "Kudidheera? (Did you drink)" }
+            ]
+          },
+          "i am learning kannada.": {
+            native: "ನಾನು ಕನ್ನಡ ಕಲಿಯುತ್ತಿದ್ದೇನೆ.",
+            translit: "Naanu Kannada kaliyuththedhaene.",
+            breakdown: [
+              { native: "ನಾನು", translit: "Naanu (I)" },
+              { native: "ಕನ್ನಡ", translit: "Kannada" },
+              { native: "ಕಲಿಯುತ್ತಿದ್ದೇನೆ", translit: "Kaliyuththedhaene (Learning)" }
+            ]
+          },
+          "what is your name?": {
+            native: "ನಿಮ್ಮ ಹೆಸರೇನು?",
+            translit: "Nimma hesaraenu?",
+            breakdown: [
+              { native: "ನಿಮ್ಮ", translit: "Nimma (Your)" },
+              { native: "ಹೆಸರೇನು?", translit: "Hesaraenu? (What name)" }
+            ]
+          },
+          "the food is very delicious!": {
+            native: "ಊಟ ತುಂಬಾ ರುಚಿಯಾಗಿದೆ!",
+            translit: "Oota thoomba ruchiyaagidhe!",
+            breakdown: [
+              { native: "ಊಟ", translit: "Oota (Food)" },
+              { native: "ತುಂಬಾ", translit: "Thoomba (Very)" },
+              { native: "ರುಚಿಯಾಗಿದೆ", translit: "Ruchiyaagidhe (Is delicious)" }
+            ]
+          }
+        },
+        vowels: [
+          { native: 'ಅ', translit: 'a', word: 'Amma (ಅಮ್ಮ)' },
+          { native: 'ಆ', translit: 'aa', word: 'Aane (ಆನೆ)' },
+          { native: 'ಇ', translit: 'i', word: 'Ili (ಇಲಿ)' },
+          { native: 'ಈ', translit: 'ee', word: 'Eesha (ಈಶ)' },
+          { native: 'ಉ', translit: 'u', word: 'Upahaara (ಉಪಹಾರ)' },
+          { native: 'ಊ', translit: 'oo', word: 'Ooru (ಊರು)' },
+          { native: 'ಋ', translit: 'ru', word: 'Rushi (ಋಷಿ)' },
+          { native: 'ಎ', translit: 'e', word: 'Ele (ಎಲೆ)' },
+          { native: 'ಏ', translit: 'ae', word: 'Eani (ಏಣಿ)' },
+          { native: 'ಐ', translit: 'ai', word: 'Aidhu (ಐದು)' },
+          { native: 'ಒ', translit: 'o', word: 'Ondhu (ಒಂದು)' },
+          { native: 'ಓ', translit: 'oa', word: 'Oata (ಓಟ)' },
+          { native: 'ಔ', translit: 'au', word: 'Oushadha (ಔಷಧ)' },
+          { native: 'ಅಂ', translit: 'am', word: 'Angi (ಅಂಗಿ)' }
+        ],
+        consonants: [
+          { native: 'ಕ', translit: 'ka', word: 'Kamala (ಕಮಲ)' },
+          { native: 'ಖ', translit: 'kha', word: 'Khadga (ಖಡ್ಗ)' },
+          { native: 'ಗ', translit: 'ga', word: 'Gante (ಗಂಟೆ)' },
+          { native: 'ಘ', translit: 'gha', word: 'Ghata (ಘಟ)' },
+          { native: 'ಚ', translit: 'cha', word: 'Chammacha (ಚಮಚ)' },
+          { native: 'ಜ', translit: 'ja', word: 'Jinke (ಜಿಂಕೆ)' },
+          { native: 'ಟ', translit: 'ta', word: 'Tamota (ಟೊಮೆಟೊ)' },
+          { native: 'ಡ', translit: 'da', word: 'Dabba (ಡಬ್ಬಿ)' },
+          { native: 'ತ', translit: 'tha', word: 'Thale (ತಲೆ)' },
+          { native: 'ದ', translit: 'dha', word: 'Dhoni (ದೋಣಿ)' },
+          { native: 'ನ', translit: 'na', word: 'Nayi (ನಾಯಿ)' },
+          { native: 'ಪ', translit: 'pa', word: 'Pata (ಪಟ)' },
+          { native: 'ಬ', translit: 'ba', word: 'Baale (ಬಾಳೆ)' },
+          { native: 'ಮ', translit: 'ma', word: 'Mane (ಮನೆ)' },
+          { native: 'ಯ', translit: 'ya', word: 'Yantra (ಯಂತ್ರ)' },
+          { native: 'ರ', translit: 'ra', word: 'Ratha (ರಥ)' },
+          { native: 'ಲ', translit: 'la', word: 'Lota (ಲೋಟ)' },
+          { native: 'ವ', translit: 'va', word: 'Vana (ವನ)' },
+          { native: 'ಸ', translit: 'sa', word: 'Soorya (ಸೂರ್ಯ)' },
+          { native: 'ಹ', translit: 'ha', word: 'Haalu (ಹಾಲು)' }
+        ],
+        scenarios: [
+          {
+            badge: "AUTO COMMUTE",
+            title: "Commute & Auto Meter",
+            en: "Will you come to Indiranagar? Put meter please.",
+            translit: "Indiranagar-ge barthira? Meter haaki.",
+            native: "ಇಂದಿರಾನಗರಕ್ಕೆ ಬರ್ತೀರಾ? ಮೀಟರ್ ಹಾಕಿ.",
+            prompt: "Will you come to Indiranagar?"
+          },
+          {
+            badge: "DARSHINI / CAFE",
+            title: "Ordering Coffee & Tiffin",
+            en: "One filter coffee, less sugar please.",
+            translit: "Ondhu filter coffee, swalpa sakkare kodi.",
+            native: "ಒಂದು ಫಿಲ್ಟರ್ ಕಾಫಿ, ಸ್ವಲ್ಪ ಸಕ್ಕರೆ ಕೊಡಿ.",
+            prompt: "Give one filter coffee with less sugar."
+          },
+          {
+            badge: "MARKET",
+            title: "Shopping & Bargaining",
+            en: "How much is this? Reduce the price a little.",
+            translit: "Idhukke eshtu? Swalpa kammi maadi.",
+            native: "ಇದಕ್ಕೆ ಎಷ್ಟು? ಸ್ವಲ್ಪ ಕಮ್ಮಿ ಮಾಡಿ.",
+            prompt: "How much does one kilo of tomatoes cost?"
+          }
+        ]
+      },
+      te: {
+        code: 'te',
+        speechCode: 'te-IN',
+        name: 'Telugu',
+        translitName: 'Tenglish',
+        icon: 'తె',
+        fontClass: 'lang-te',
+        heroTag: 'DOMAIN ACTIVE // TELUGU (TE-02)',
+        curated: {
+          "where is the metro station?": {
+            native: "మెట్రో స్టేషన్ ఎక్కడ ఉంది?",
+            translit: "Metro station ekkada undhi?",
+            breakdown: [
+              { native: "మెట్రో", translit: "Metro" },
+              { native: "స్టేషన్", translit: "Station" },
+              { native: "ఎక్కడ", translit: "Ekkada (Where)" },
+              { native: "ఉంది?", translit: "Undhi? (Is it)" }
+            ]
+          },
+          "how much for this auto ride?": {
+            native: "ఈ ఆటో ప్రయాణానికి ఎంత?",
+            translit: "Ee auto prayaaniki entha?",
+            breakdown: [
+              { native: "ఈ", translit: "Ee (This)" },
+              { native: "ఆటో", translit: "Auto" },
+              { native: "ఎంత?", translit: "Entha? (How much)" }
+            ]
+          },
+          "did you have coffee?": {
+            native: "కాఫీ తాగారా?",
+            translit: "Coffee thaagaaraa?",
+            breakdown: [
+              { native: "కాఫీ", translit: "Coffee" },
+              { native: "తాగారా?", translit: "Thaagaaraa? (Did you drink)" }
+            ]
+          },
+          "i am learning kannada.": {
+            native: "నేను తెలుగు నేర్చుకుంటున్నాను.",
+            translit: "Nenu Telugu nerchukuntunnaanu.",
+            breakdown: [
+              { native: "నేను", translit: "Nenu (I)" },
+              { native: "తెలుగు", translit: "Telugu" },
+              { native: "నేర్చుకుంటున్నాను", translit: "Nerchukuntunnaanu (Learning)" }
+            ]
+          },
+          "what is your name?": {
+            native: "మీ పేరు ఏమిటి?",
+            translit: "Mee peru emiti?",
+            breakdown: [
+              { native: "మీ", translit: "Mee (Your)" },
+              { native: "పేరు", translit: "Peru (Name)" },
+              { native: "ఏమిటి?", translit: "Emiti? (What is)" }
+            ]
+          },
+          "the food is very delicious!": {
+            native: "భోజనం చాలా రుచిగా ఉంది!",
+            translit: "Bhojanam chaala ruchigaa undhi!",
+            breakdown: [
+              { native: "భోజనం", translit: "Bhojanam (Food)" },
+              { native: "చాలా", translit: "Chaala (Very)" },
+              { native: "రుచిగా ఉంది", translit: "Ruchigaa undhi (Is delicious)" }
+            ]
+          }
+        },
+        vowels: [
+          { native: 'అ', translit: 'a', word: 'Amma (అమ్మ)' },
+          { native: 'ఆ', translit: 'aa', word: 'Aavu (ఆవు)' },
+          { native: 'ఇ', translit: 'i', word: 'Illu (ఇల్లు)' },
+          { native: 'ఈ', translit: 'ee', word: 'Eega (ఈగ)' },
+          { native: 'ఉ', translit: 'u', word: 'Udayam (ఉదయం)' },
+          { native: 'ఊ', translit: 'oo', word: 'Ooru (ఊరు)' },
+          { native: 'ఋ', translit: 'ru', word: 'Rushi (ఋషి)' },
+          { native: 'ఎ', translit: 'e', word: 'Enugu (ఎలుగు)' },
+          { native: 'ఏ', translit: 'ae', word: 'Eti (ఏటి)' },
+          { native: 'ఐ', translit: 'ai', word: 'Aidu (ఐదు)' },
+          { native: 'ఒ', translit: 'o', word: 'Oka (ఒక)' },
+          { native: 'ఓ', translit: 'oa', word: 'Otu (ఓటు)' },
+          { native: 'ఔ', translit: 'au', word: 'Oushadham (ఔషధం)' },
+          { native: 'అం', translit: 'am', word: 'Andham (అందం)' }
+        ],
+        consonants: [
+          { native: 'క', translit: 'ka', word: 'Kalam (కలం)' },
+          { native: 'ఖ', translit: 'kha', word: 'Khadgam (ఖడ్గం)' },
+          { native: 'గ', translit: 'ga', word: 'Ganta (గంట)' },
+          { native: 'ఘ', translit: 'gha', word: 'Ghatam (ఘటం)' },
+          { native: 'చ', translit: 'cha', word: 'Chakram (చక్రం)' },
+          { native: 'జ', translit: 'ja', word: 'Jada (జడ)' },
+          { native: 'ట', translit: 'ta', word: 'Tamota (టమోటా)' },
+          { native: 'డ', translit: 'da', word: 'Dabba (డబ్బా)' },
+          { native: 'త', translit: 'tha', word: 'Thala (తల)' },
+          { native: 'ద', translit: 'dha', word: 'Dhanda (దండ)' },
+          { native: 'న', translit: 'na', word: 'Nalla (నల్ల)' },
+          { native: 'ప', translit: 'pa', word: 'Padava (పడవ)' },
+          { native: 'బ', translit: 'ba', word: 'Banthi (బంతి)' },
+          { native: 'మ', translit: 'ma', word: 'Manishi (మనిషి)' },
+          { native: 'య', translit: 'ya', word: 'Yantram (యంత్రం)' },
+          { native: 'ర', translit: 'ra', word: 'Ratham (రథం)' },
+          { native: 'ల', translit: 'la', word: 'Latha (లత)' },
+          { native: 'వ', translit: 'va', word: 'Vala (వల)' },
+          { native: 'స', translit: 'sa', word: 'Sanchi (సంచి)' },
+          { native: 'హ', translit: 'ha', word: 'Hamsa (హంస)' }
+        ],
+        scenarios: [
+          {
+            badge: "AUTO COMMUTE",
+            title: "Commute & Auto Meter",
+            en: "Will you come to Hitec City? Put meter please.",
+            translit: "Hitec City-ki vasthaaraa? Meter veyandi.",
+            native: "హైటెక్ సిటీకి వస్తారా? మీటర్ వేయండి.",
+            prompt: "Will you come to Indiranagar?"
+          },
+          {
+            badge: "TIFFIN CENTER",
+            title: "Ordering Coffee & Idli",
+            en: "One filter coffee, less sugar please.",
+            translit: "Okka filter coffee, thakkuva chekkera ivvandi.",
+            native: "ఒక్క ఫిల్టర్ కాఫీ, తక్కువ చెక్కెర ఇవ్వండి.",
+            prompt: "Give one filter coffee with less sugar."
+          },
+          {
+            badge: "MARKET",
+            title: "Bargaining & Cost",
+            en: "How much is this? Reduce the rate a little.",
+            translit: "Dheeni vela entha? Konchem thagginchandi.",
+            native: "దీని వెల ఎంత? కొంచెం తగ్గించండి.",
+            prompt: "How much does one kilo of tomatoes cost?"
+          }
+        ]
+      },
+      ta: {
+        code: 'ta',
+        speechCode: 'ta-IN',
+        name: 'Tamil',
+        translitName: 'Tanglish',
+        icon: 'த',
+        fontClass: 'lang-ta',
+        heroTag: 'DOMAIN ACTIVE // TAMIL (TA-03)',
+        curated: {
+          "where is the metro station?": {
+            native: "மெட்ரோ நிலையம் எங்கே உள்ளது?",
+            translit: "Metro nilaiyam engae ulladhu?",
+            breakdown: [
+              { native: "மெட்ரோ", translit: "Metro" },
+              { native: "நிலையம்", translit: "Nilaiyam (Station)" },
+              { native: "எங்கே", translit: "Engae (Where)" },
+              { native: "உள்ளது?", translit: "Ulladhu? (Is located)" }
+            ]
+          },
+          "how much for this auto ride?": {
+            native: "இந்த ஆட்டோ சவாரிக்கு எவ்வளவு?",
+            translit: "Indha auto savaarikku evvalavu?",
+            breakdown: [
+              { native: "இந்த", translit: "Indha (This)" },
+              { native: "ஆட்டோ", translit: "Auto" },
+              { native: "எவ்வளவு?", translit: "Evvalavu? (How much)" }
+            ]
+          },
+          "did you have coffee?": {
+            native: "காபி குடித்தீர்களா?",
+            translit: "Coffee kudiththeergalaa?",
+            breakdown: [
+              { native: "காபி", translit: "Coffee" },
+              { native: "குடித்தீர்களா?", translit: "Kudiththeergalaa? (Did you drink)" }
+            ]
+          },
+          "i am learning kannada.": {
+            native: "நான் தமிழ் கற்கிறேன்.",
+            translit: "Naan Thamizh karkiraen.",
+            breakdown: [
+              { native: "நான்", translit: "Naan (I)" },
+              { native: "தமிழ்", translit: "Thamizh" },
+              { native: "கற்கிறேன்", translit: "Karkiraen (Learning)" }
+            ]
+          },
+          "what is your name?": {
+            native: "உங்கள் பெயர் என்ன?",
+            translit: "Ungal peyar enna?",
+            breakdown: [
+              { native: "உங்கள்", translit: "Ungal (Your)" },
+              { native: "பெயர்", translit: "Peyar (Name)" },
+              { native: "என்ன?", translit: "Enna? (What is)" }
+            ]
+          },
+          "the food is very delicious!": {
+            native: "உணவு மிகவும் சுவையாக உள்ளது!",
+            translit: "Unavu migavum suvaiyaaga ulladhu!",
+            breakdown: [
+              { native: "உணவு", translit: "Unavu (Food)" },
+              { native: "மிகவும்", translit: "Migavum (Very)" },
+              { native: "சுவையாக உள்ளது", translit: "Suvaiyaaga ulladhu (Is delicious)" }
+            ]
+          }
+        },
+        vowels: [
+          { native: 'அ', translit: 'a', word: 'Amma (அம்மா)' },
+          { native: 'ஆ', translit: 'aa', word: 'Aadu (ஆடு)' },
+          { native: 'இ', translit: 'i', word: 'Ilai (இலை)' },
+          { native: 'ஈ', translit: 'ee', word: 'Eetti (ஈட்டி)' },
+          { native: 'உ', translit: 'u', word: 'Ural (உரல்)' },
+          { native: 'ஊ', translit: 'oo', word: 'Oosi (ஊசி)' },
+          { native: 'எ', translit: 'e', word: 'Eli (எலி)' },
+          { native: 'ஏ', translit: 'ae', word: 'Eani (ஏணி)' },
+          { native: 'ஐ', translit: 'ai', word: 'Ainthu (ஐந்து)' },
+          { native: 'ஒ', translit: 'o', word: 'Ontru (ஒன்று)' },
+          { native: 'ஓ', translit: 'oa', word: 'Odam (ஓடம்)' },
+          { native: 'ஔ', translit: 'au', word: 'Avvai (ஔவை)' },
+          { native: 'ஃ', translit: 'ah', word: 'Ayutha (எஃகு)' }
+        ],
+        consonants: [
+          { native: 'க', translit: 'ka', word: 'Kadal (கடல்)' },
+          { native: 'ங', translit: 'nga', word: 'Enganam (எங்ஙனம்)' },
+          { native: 'ச', translit: 'cha', word: 'Sattai (சட்டை)' },
+          { native: 'ஞ', translit: 'gnya', word: 'Gnaayiru (ஞாயிறு)' },
+          { native: 'ட', translit: 'ta', word: 'Padam (படம்)' },
+          { native: 'ண', translit: 'na', word: 'Kan (கண்)' },
+          { native: 'த', translit: 'tha', word: 'Thavam (தவம்)' },
+          { native: 'ந', translit: 'na', word: 'Nandri (நன்றி)' },
+          { native: 'ப', translit: 'pa', word: 'Pattam (பட்டம்)' },
+          { native: 'ம', translit: 'ma', word: 'Mani (மணி)' },
+          { native: 'ய', translit: 'ya', word: 'Yaazh (யாழ்)' },
+          { native: 'ர', translit: 'ra', word: 'Ratham (ரதம்)' },
+          { native: 'ல', translit: 'la', word: 'Lattu (லட்டு)' },
+          { native: 'வ', translit: 'va', word: 'Vanam (வானம்)' },
+          { native: 'ழ', translit: 'zha', word: 'Thamizh (தமிழ்)' },
+          { native: 'ள', translit: 'la', word: 'Kili (கிளி)' },
+          { native: 'ற', translit: 'ra', word: 'Paravai (பறவை)' },
+          { native: 'ன', translit: 'na', word: 'Annai (அன்னை)' }
+        ],
+        scenarios: [
+          {
+            badge: "AUTO COMMUTE",
+            title: "Commute & Auto Meter",
+            en: "Will you come to T.Nagar? Put meter please.",
+            translit: "T.Nagar-kku vareengala? Meter podunga.",
+            native: "டி.நகருக்கு வரீங்களா? மீட்டர் போடுங்க.",
+            prompt: "Will you come to Indiranagar?"
+          },
+          {
+            badge: "HOTEL SARAVANA",
+            title: "Filter Coffee & Dosai",
+            en: "One filter coffee, less sugar please.",
+            translit: "Oru filter coffee, kammiyaana sarkarai.",
+            native: "ஒரு ஃபில்டர் காபி, கம்மியான சர்க்கரை கொடுங்க.",
+            prompt: "Give one filter coffee with less sugar."
+          },
+          {
+            badge: "MARKET",
+            title: "Buying & Bargaining",
+            en: "How much is this? Please reduce the price.",
+            translit: "Idhu evvalavu? Konjam kammi pannunga.",
+            native: "இது எவ்வளவு? கொஞ்சம் கம்மி பண்ணுங்க.",
+            prompt: "How much does one kilo of tomatoes cost?"
+          }
+        ]
+      }
+    };
+
+    /* Active Language State */
+    let currentLang = 'kn';
+    let currentXP = 120;
+    let currentStreak = 3;
+
+    function addXP(amount = 25) {
+      currentXP += amount;
+      document.getElementById('xpVal').textContent = currentXP;
+      const el = document.getElementById('xpVal');
+      el.style.color = '#10b981';
+      setTimeout(() => el.style.color = 'var(--accent-amber)', 600);
+    }
+
+    /* ==========================================================================
+       3. TRANSLITERATOR ENGINE FOR DRAVIDIAN SCRIPTS
+       ========================================================================== */
+    function transliterateScriptToLatin(text, lang) {
+      if (!text) return '';
+      
+      const charMap = {
+        kn: {
+          'ಅ':'a', 'ಆ':'aa', 'ಇ':'i', 'ಈ':'ee', 'ಉ':'u', 'ಊ':'oo', 'ಋ':'ru', 'ಎ':'e', 'ಏ':'ae', 'ಐ':'ai', 'ಒ':'o', 'ಓ':'oa', 'ಔ':'au', 'ಅಂ':'am', 'ಅಃ':'aha',
+          'ಕ':'k', 'ಖ':'kh', 'ಗ':'g', 'ಘ':'gh', 'ಙ':'ng', 'ಚ':'ch', 'ಛ':'chh', 'ಜ':'j', 'ಝ':'jh', 'ಞ':'ny', 'ಟ':'t', 'ಠ':'th', 'ಡ':'d', 'ಢ':'dh', 'ಣ':'n', 'ತ':'th', 'ಥ':'thh', 'ದ':'d', 'ಧ':'dh', 'ನ':'n', 'ಪ':'p', 'ಫ':'ph', 'ಬ':'b', 'ಭ':'bh', 'ಮ':'m', 'ಯ':'y', 'ರ':'r', 'ಱ':'r', 'ಲ':'l', 'ವ':'v', 'ಶ':'sh', 'ಷ':'sh', 'ಸ':'s', 'ಹ':'h', 'ಳ':'l',
+          'ಾ':'aa', 'ಿ':'i', 'ೀ':'ee', 'ು':'u', 'ೂ':'oo', 'ೃ':'ru', 'ೆ':'e', 'ೇ':'ae', 'ೈ':'ai', 'ೊ':'o', 'ೋ':'oa', 'ೌ':'au', '್':'', 'ಂ':'m', 'ಃ':'h'
+        },
+        te: {
+          'అ':'a', 'ఆ':'aa', 'ఇ':'i', 'ఈ':'ee', 'ఉ':'u', 'ఊ':'oo', 'ఋ':'ru', 'ఎ':'e', 'ఏ':'ae', 'ఐ':'ai', 'ఒ':'o', 'ఓ':'oa', 'ఔ':'au', 'అం':'am', 'అః':'aha',
+          'క':'k', 'ఖ':'kh', 'గ':'g', 'ఘ':'gh', 'ఙ':'ng', 'చ':'ch', 'ఛ':'chh', 'జ':'j', 'ఝ':'jh', 'ఞ':'ny', 'ట':'t', 'ఠ':'th', 'డ':'d', 'ఢ':'dh', 'ణ':'n', 'త':'th', 'థ':'thh', 'ద':'d', 'ధ':'dh', 'న':'n', 'ప':'p', 'ఫ':'ph', 'బ':'b', 'భ':'bh', 'మ':'m', 'య':'y', 'ర':'r', 'ల':'l', 'వ':'v', 'శ':'sh', 'ష':'sh', 'స':'s', 'హ':'h', 'ళ':'l',
+          'ా':'aa', 'ి':'i', 'ీ':'ee', 'ు':'u', 'ూ':'oo', 'ృ':'ru', 'ె':'e', 'ే':'ae', 'ై':'ai', 'ొ':'o', 'ో':'oa', 'ౌ':'au', '్':'', 'ం':'m', 'ః':'h'
+        },
+        ta: {
+          'அ':'a', 'ஆ':'aa', 'இ':'i', 'ஈ':'ee', 'உ':'u', 'ஊ':'oo', 'எ':'e', 'ஏ':'ae', 'ஐ':'ai', 'ஒ':'o', 'ஓ':'oa', 'ஔ':'au', 'ஃ':'ah',
+          'க':'k', 'ங':'ng', 'ச':'ch', 'ஞ':'gn', 'ட':'t', 'ண':'n', 'த':'th', 'ந':'n', 'ப':'p', 'ம':'m', 'ய':'y', 'ர':'r', 'ல':'l', 'வ':'v', 'ழ':'zh', 'ள':'l', 'ற':'r', 'ன':'n', 'ஜ':'j', 'ஷ':'sh', 'ஸ':'s', 'ஹ':'h',
+          'ா':'aa', 'ி':'i', 'ீ':'ee', 'ு':'u', 'ூ':'oo', 'ெ':'e', 'ே':'ae', 'ை':'ai', 'ொ':'o', 'ோ':'oa', 'ௌ':'au', '்':''
+        }
+      };
+
+      const table = charMap[lang] || charMap.kn;
+      let res = '';
+      const chars = Array.from(text);
+
+      for (let i = 0; i < chars.length; i++) {
+        const c = chars[i];
+        const next = chars[i + 1];
+
+        if (table[c] !== undefined) {
+          if (next === '್' || next === '్' || next === '்') {
+            res += table[c];
+            i++;
+          } else if (table[next] && (next >= 'ಾ' && next <= 'ೌ')) {
+            res += table[c] + table[next];
+            i++;
+          } else {
+            // inherent vowel for consonants
+            const isVowelChar = (c >= 'ಅ' && c <= 'ಔ') || (c >= 'అ' && c <= 'ఔ') || (c >= 'அ' && c <= 'ஔ');
+            res += isVowelChar ? table[c] : table[c] + 'a';
+          }
+        } else {
+          res += c;
+        }
+      }
+
+      return res.replace(/\b([a-z])/g, ch => ch.toUpperCase());
+    }
+
+    // Live Universal Translation with Curated Instant Lookup
+    async function translateEngine(text, targetLang) {
+      const cfg = languageConfig[targetLang];
+      const clean = text.trim();
+      const lower = clean.toLowerCase();
+
+      if (cfg.curated[lower]) {
+        return cfg.curated[lower];
+      }
+
+      try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${cfg.code}&dt=t&q=${encodeURIComponent(clean)}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Fallback required");
+        const data = await res.json();
+        
+        let nativeText = "";
+        if (data && data[0]) {
+          nativeText = data[0].map(item => item[0]).join("");
+        }
+
+        const translitText = transliterateScriptToLatin(nativeText, targetLang);
+        const words = nativeText.split(/\s+/);
+        const breakdown = words.map(w => ({
+          native: w,
+          translit: transliterateScriptToLatin(w, targetLang)
+        }));
+
+        return {
+          native: nativeText,
+          translit: translitText,
+          breakdown: breakdown
+        };
+      } catch (e) {
+        return {
+          native: targetLang === 'kn' ? "ಕ್ಷಮಿಸಿ, ಮರುಪ್ರಯತ್ನಿಸಿ" : targetLang === 'te' ? "క్షమించండి, మళ్ళీ ప్రయత్నించండి" : "மன்னிக்கவும், மீண்டும் முயற்சிக்கவும்",
+          translit: "Kshamisi, maru-prayatnisi",
+          breakdown: [{ native: "Offline", translit: "Retry" }]
+        };
+      }
+    }
+
+    /* ==========================================================================
+       4. UI CONTROLLER & RENDERING ENGINE
+       ========================================================================== */
+    const sentenceInput = document.getElementById('sentenceInput');
+    const translateBtn = document.getElementById('translateBtn');
+    const nativeOutput = document.getElementById('nativeOutput');
+    const translitOutput = document.getElementById('translitOutput');
+    const nativeScriptLabel = document.getElementById('nativeScriptLabel');
+    const translitLabel = document.getElementById('translitLabel');
+    const breakdownBox = document.getElementById('breakdownContainer');
+    const statusIndicator = document.getElementById('statusIndicator');
+    const synthDeckTag = document.getElementById('synthDeckTag');
+    const brandIcon = document.getElementById('brandIcon');
+    const langHeroBadge = document.getElementById('langHeroBadge');
+
+    function applyLanguageDomain(langKey) {
+      currentLang = langKey;
+      const cfg = languageConfig[langKey];
+
+      // Update Nav buttons
+      document.querySelectorAll('.domain-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === langKey);
+      });
+
+      // Update Branding
+      brandIcon.textContent = cfg.icon;
+      langHeroBadge.innerHTML = `<span>●</span> ${cfg.heroTag}`;
+      synthDeckTag.textContent = `// SENTENCE SYNTHESIS UNIT — ${cfg.name.toUpperCase()}`;
+      nativeScriptLabel.textContent = `${cfg.name} Script [ಲಿಪಿ]`;
+      translitLabel.textContent = `${cfg.name} in English (${cfg.translitName})`;
+
+      nativeOutput.className = `native-script-text ${cfg.fontClass}`;
+
+      renderQuickChips();
+      renderScenarios();
+      buildKeyboardMatrix();
+
+      // Trigger translate on current value
+      handleTranslate(sentenceInput.value || "Where is the metro station?");
+    }
+
+    function renderQuickChips() {
+      const container = document.getElementById('quickChipsContainer');
+      const phrases = [
+        "Where is the metro station?",
+        "How much for this auto ride?",
+        "Did you have coffee?",
+        "What is your name?",
+        "The food is very delicious!"
+      ];
+      container.innerHTML = phrases.map(p => `<button class="chip" data-phrase="${p}">${p}</button>`).join('');
+
+      container.querySelectorAll('.chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sound.playSwitchClick(360);
+          sentenceInput.value = btn.dataset.phrase;
+          handleTranslate(btn.dataset.phrase);
+        });
+      });
+    }
+
+    function renderScenarios() {
+      const grid = document.getElementById('scenariosGridContainer');
+      const cfg = languageConfig[currentLang];
+      grid.innerHTML = cfg.scenarios.map(sc => `
+        <div class="scenario-card" data-phrase="${sc.prompt}">
+          <div class="sc-header">
+            <span style="font-size:1.3rem;">⚡</span>
+            <span class="sc-badge">${sc.badge}</span>
+          </div>
+          <h3 class="sc-title">${sc.title}</h3>
+          <div class="sc-phrase-row">
+            <span class="sc-en">"${sc.en}"</span>
+            <span class="sc-translit">${sc.translit}</span>
+            <span class="sc-native ${cfg.fontClass}">${sc.native}</span>
+          </div>
+        </div>
+      `).join('');
+
+      grid.querySelectorAll('.scenario-card').forEach(card => {
+        card.addEventListener('click', () => {
+          sound.playSwitchClick(480, true);
+          sentenceInput.value = card.dataset.phrase;
+          handleTranslate(card.dataset.phrase);
+          window.scrollTo({ top: 220, behavior: 'smooth' });
+        });
+      });
+    }
+
+    async function handleTranslate(query) {
+      if (!query.trim()) return;
+      sound.playSwitchClick(520, true);
+      statusIndicator.textContent = "SYNTHESIZING...";
+      statusIndicator.style.color = "var(--elytra-red)";
+
+      const res = await translateEngine(query, currentLang);
+      nativeOutput.textContent = res.native;
+      translitOutput.textContent = res.translit;
+
+      // Breakdown
+      breakdownBox.innerHTML = '<span class="breakdown-label">Lexical Deconstruction:</span>';
+      res.breakdown.forEach(b => {
+        const d = document.createElement('div');
+        d.className = 'word-unit';
+        d.innerHTML = `<span class="wu-native ${languageConfig[currentLang].fontClass}">${b.native}</span><span class="wu-translit">${b.translit}</span>`;
+        d.addEventListener('click', () => {
+          sound.playSwitchClick(680);
+          speakLanguage(b.native);
+        });
+        breakdownBox.appendChild(d);
+      });
+
+      statusIndicator.textContent = "READY // STREAM SYNCHRONIZED";
+      statusIndicator.style.color = "var(--text-muted)";
+    }
+
+    sentenceInput.addEventListener('keydown', (e) => {
+      sound.playSwitchClick(420);
+      if (e.key === 'Enter') handleTranslate(sentenceInput.value);
+    });
+
+    translateBtn.addEventListener('click', () => handleTranslate(sentenceInput.value));
+
+    // Speech synthesis
+    function speakLanguage(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = languageConfig[currentLang].speechCode;
+      utt.rate = 0.92;
+      window.speechSynthesis.speak(utt);
+    }
+
+    document.getElementById('speakNativeBtn').addEventListener('click', () => {
+      sound.playSwitchClick(600);
+      speakLanguage(nativeOutput.textContent);
+    });
+
+    // Translit copy
+    document.getElementById('copyTranslitBtn').addEventListener('click', () => {
+      sound.playSwitchClick(500);
+      navigator.clipboard.writeText(translitOutput.textContent).then(() => {
+        const f = document.getElementById('copyFeedback');
+        f.textContent = "Copied!";
+        setTimeout(() => f.textContent = "Copy", 1500);
+      });
+    });
+
+    // Domain switcher buttons
+    document.querySelectorAll('.domain-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sound.playSwitchClick(550, true);
+        applyLanguageDomain(btn.dataset.lang);
+        initWordBlitz();
+        initSyntaxScramble();
+        initSoundGuesser();
+      });
+    });
+
+    // Sound toggle
+    const soundToggle = document.getElementById('soundToggle');
+    soundToggle.addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      soundToggle.classList.toggle('active', sound.enabled);
+      soundToggle.querySelector('span:last-child').textContent = sound.enabled ? "AUDIO ON" : "AUDIO OFF";
+      if (sound.enabled) sound.playSwitchClick(600);
+    });
+
+    /* ==========================================================================
+       5. ARCADE GAME 1: WORD BLITZ
+       ========================================================================== */
+    let blitzTimer = null;
+    let blitzScore = 0;
+    let blitzMultiplier = 1;
+
+    function initWordBlitz() {
+      const cfg = languageConfig[currentLang];
+      const questions = Object.keys(cfg.curated);
+      const chosenQ = questions[Math.floor(Math.random() * questions.length)];
+      const correctAns = cfg.curated[chosenQ];
+
+      document.getElementById('blitzQuestion').textContent = `"${chosenQ.toUpperCase()}"`;
+
+      // Pick 3 random wrong options
+      let wrongOptions = [];
+      Object.keys(cfg.curated).forEach(k => {
+        if (k !== chosenQ) wrongOptions.push(cfg.curated[k]);
+      });
+      wrongOptions.sort(() => 0.5 - Math.random());
+      const selectedWrong = wrongOptions.slice(0, 3);
+
+      const allOptions = [correctAns, ...selectedWrong].sort(() => 0.5 - Math.random());
+
+      const grid = document.getElementById('blitzOptions');
+      grid.innerHTML = allOptions.map(opt => `
+        <button class="blitz-option-btn" data-correct="${opt === correctAns}">
+          <span class="opt-translit">${opt.translit}</span>
+          <span class="opt-native ${cfg.fontClass}">${opt.native}</span>
+        </button>
+      `).join('');
+
+      grid.querySelectorAll('.blitz-option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const isCorrect = btn.dataset.correct === 'true';
+          if (isCorrect) {
+            btn.classList.add('correct');
+            sound.playBuzzer(true);
+            blitzScore += 50 * blitzMultiplier;
+            blitzMultiplier = Math.min(blitzMultiplier + 1, 5);
+            addXP(30);
+          } else {
+            btn.classList.add('wrong');
+            sound.playBuzzer(false);
+            blitzMultiplier = 1;
+          }
+          document.getElementById('blitzScore').textContent = blitzScore;
+          document.getElementById('blitzMultiplier').textContent = `${blitzMultiplier}x`;
+
+          setTimeout(initWordBlitz, 800);
+        });
+      });
+
+      // Reset timer bar animation
+      const bar = document.getElementById('timerFill');
+      bar.style.transition = 'none';
+      bar.style.width = '100%';
+      setTimeout(() => {
+        bar.style.transition = 'width 6s linear';
+        bar.style.width = '0%';
+      }, 50);
+
+      clearTimeout(blitzTimer);
+      blitzTimer = setTimeout(() => {
+        blitzMultiplier = 1;
+        document.getElementById('blitzMultiplier').textContent = '1x';
+        initWordBlitz();
+      }, 6000);
+    }
+
+    /* ==========================================================================
+       6. ARCADE GAME 2: SYNTAX SCRAMBLE
+       ========================================================================== */
+    let currentScrambleTarget = null;
+    let assembledWords = [];
+
+    function initSyntaxScramble() {
+      const cfg = languageConfig[currentLang];
+      const keys = Object.keys(cfg.curated);
+      const chosen = keys[Math.floor(Math.random() * keys.length)];
+      currentScrambleTarget = cfg.curated[chosen];
+
+      document.getElementById('scramblePrompt').textContent = `"${chosen.toUpperCase()}"`;
+      assembledWords = [];
+
+      const correctWords = currentScrambleTarget.translit.replace(/[?.!]/g, '').split(/\s+/);
+      const shuffled = [...correctWords].sort(() => 0.5 - Math.random());
+
+      const pool = document.getElementById('scrambleWordPool');
+      const dropzone = document.getElementById('scrambleDropzone');
+      dropzone.innerHTML = '<span class="breakdown-label">Click words below to assemble here:</span>';
+
+      pool.innerHTML = shuffled.map((word, idx) => `
+        <button class="scramble-chip" data-word="${word}" id="chip-${idx}">${word}</button>
+      `).join('');
+
+      pool.querySelectorAll('.scramble-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sound.playSwitchClick(480);
+          assembledWords.push(btn.dataset.word);
+          btn.style.display = 'none';
+
+          // Add to dropzone
+          const piece = document.createElement('div');
+          piece.className = 'scramble-chip';
+          piece.style.borderColor = 'var(--elytra-red)';
+          piece.textContent = btn.dataset.word;
+          dropzone.appendChild(piece);
+        });
+      });
+    }
+
+    document.getElementById('scrambleResetBtn').addEventListener('click', () => {
+      sound.playSwitchClick(300);
+      initSyntaxScramble();
+    });
+
+    document.getElementById('scrambleCheckBtn').addEventListener('click', () => {
+      const targetStr = currentScrambleTarget.translit.replace(/[?.!]/g, '').toLowerCase().trim();
+      const userStr = assembledWords.join(' ').toLowerCase().trim();
+
+      if (targetStr === userStr) {
+        sound.playBuzzer(true);
+        addXP(60);
+        alert('🎉 Perfect Syntax! XP +60');
+        initSyntaxScramble();
+      } else {
+        sound.playBuzzer(false);
+        alert('❌ Syntax mismatch. Recheck the word order and try again.');
+      }
+    });
+
+    /* ==========================================================================
+       7. ARCADE GAME 3: AKSHARA SOUND GUESSER
+       ========================================================================== */
+    let mysteryChar = null;
+
+    function initSoundGuesser() {
+      const cfg = languageConfig[currentLang];
+      const allKeys = [...cfg.vowels, ...cfg.consonants];
+      mysteryChar = allKeys[Math.floor(Math.random() * allKeys.length)];
+
+      const feedback = document.getElementById('audioFeedback');
+      feedback.textContent = '';
+
+      // Pick 3 other random keys
+      let distractors = allKeys.filter(k => k.native !== mysteryChar.native);
+      distractors.sort(() => 0.5 - Math.random());
+      const choices = [mysteryChar, ...distractors.slice(0, 5)].sort(() => 0.5 - Math.random());
+
+      const grid = document.getElementById('audioGuessOptions');
+      grid.innerHTML = choices.map(item => `
+        <div class="mech-key" data-native="${item.native}">
+          <span class="mech-native ${cfg.fontClass}">${item.native}</span>
+          <span class="mech-translit">${item.translit}</span>
+        </div>
+      `).join('');
+
+      grid.querySelectorAll('.mech-key').forEach(key => {
+        key.addEventListener('click', () => {
+          sound.playSwitchClick(500);
+          if (key.dataset.native === mysteryChar.native) {
+            sound.playBuzzer(true);
+            feedback.innerHTML = `<span style="color:var(--accent-emerald)">✔ Correct! That's "${mysteryChar.translit}" (${mysteryChar.native})</span>`;
+            addXP(25);
+            setTimeout(initSoundGuesser, 1200);
+          } else {
+            sound.playBuzzer(false);
+            feedback.innerHTML = `<span style="color:var(--elytra-crimson)">✖ Incorrect sound. Try again!</span>`;
+          }
+        });
+      });
+
+      // Play sound automatically on start
+      speakLanguage(mysteryChar.native);
+    }
+
+    document.getElementById('playMysterySoundBtn').addEventListener('click', () => {
+      sound.playSwitchClick(580);
+      if (mysteryChar) speakLanguage(mysteryChar.native);
+    });
+
+    /* ==========================================================================
+       8. AKSHARA KEYBOARD MATRIX
+       ========================================================================== */
+    function buildKeyboardMatrix() {
+      const cfg = languageConfig[currentLang];
+      const vGrid = document.getElementById('vowelsGrid');
+      const cGrid = document.getElementById('consonantsGrid');
+      const inspChar = document.getElementById('inspChar');
+      const inspPhonetic = document.getElementById('inspPhonetic');
+      const inspSample = document.getElementById('inspSample');
+
+      vGrid.innerHTML = '';
+      cGrid.innerHTML = '';
+
+      function fillGrid(list, target) {
+        list.forEach((item, idx) => {
+          const key = document.createElement('div');
+          key.className = 'mech-key';
+          key.innerHTML = `
+            <span class="mech-native ${cfg.fontClass}">${item.native}</span>
+            <span class="mech-translit">${item.translit}</span>
+          `;
+          key.addEventListener('click', () => {
+            sound.playSwitchClick(320 + idx * 14);
+            key.classList.add('pressed');
+            setTimeout(() => key.classList.remove('pressed'), 120);
+
+            inspChar.textContent = item.native;
+            inspPhonetic.textContent = item.translit;
+            inspSample.textContent = item.word;
+
+            speakLanguage(item.native);
+          });
+          target.appendChild(key);
+        });
+      }
+
+      fillGrid(cfg.vowels, vGrid);
+      fillGrid(cfg.consonants, cGrid);
+
+      // Default inspector
+      inspChar.textContent = cfg.vowels[0].native;
+      inspPhonetic.textContent = cfg.vowels[0].translit;
+      inspSample.textContent = cfg.vowels[0].word;
+    }
+
+    /* ==========================================================================
+       9. MODULE TAB SWITCHER
+       ========================================================================== */
+    const tabs = {
+      'synth': document.getElementById('moduleSynth'),
+      'game-blitz': document.getElementById('moduleBlitz'),
+      'game-scramble': document.getElementById('moduleScramble'),
+      'game-audio': document.getElementById('moduleAudio'),
+      'matrix': document.getElementById('moduleMatrix')
+    };
+
+    document.querySelectorAll('.module-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sound.playSwitchClick(450);
+        document.querySelectorAll('.module-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const tabKey = btn.dataset.tab;
+        Object.keys(tabs).forEach(k => {
+          if (k === tabKey) {
+            tabs[k].classList.remove('hidden-panel');
+          } else {
+            tabs[k].classList.add('hidden-panel');
+          }
+        });
+
+        if (tabKey === 'game-blitz') initWordBlitz();
+        if (tabKey === 'game-scramble') initSyntaxScramble();
+        if (tabKey === 'game-audio') initSoundGuesser();
+      });
+    });
+
+    // Boot initialize
+    applyLanguageDomain('kn');
+  </script>
+</body>
+</html>
